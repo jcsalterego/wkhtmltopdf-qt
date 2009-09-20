@@ -185,6 +185,85 @@ void QWEBKIT_EXPORT qt_drt_garbageCollector_collectOnAlternateThread(bool waitUn
     gcController().garbageCollectOnAlternateThreadForDebugging(waitUntilDone);
 }
 
+
+#ifndef QT_NO_PRINTER
+
+QWebPrinterBeginCaller::QWebPrinterBeginCaller(QPainter &painter, QPrinter *printer)
+{
+    painter.begin(printer);
+}
+
+QWebPrinterPrivate::QWebPrinterPrivate(const QWebFrame *frame, QPrinter *printer)
+    : printContext(frame->d->frame)
+    , beginCaller(painter, printer)
+    , graphicsContext(&painter)
+{
+    const qreal zoomFactorX = printer->logicalDpiX() / qt_defaultDpi();
+    const qreal zoomFactorY = printer->logicalDpiY() / qt_defaultDpi();
+    QRect qprinterRect = printer->pageRect();
+    IntRect pageRect(0, 0,
+                     int(qprinterRect.width() / zoomFactorX),
+                     int(qprinterRect.height() / zoomFactorY));
+    
+    printContext.begin(pageRect.width());
+    float pageHeight = 0;
+    printContext.computePageRects(pageRect, /* headerHeight */ 0, /* footerHeight */ 0, /* userScaleFactor */ 1.0, pageHeight);
+    
+    painter.scale(zoomFactorX, zoomFactorY);
+    printWidth = pageRect.width();
+}
+
+QWebPrinterPrivate::~QWebPrinterPrivate() 
+{
+    printContext.end();
+    painter.end();
+}
+
+/*!
+    \class QWebPrinter
+    \since 4.7
+    \brief The QWebPrinter controls printing of a \l{QWebFrame::}
+
+    \inmodule QtWebKit
+
+    \sa QWebFrame
+*/
+QWebPrinter::QWebPrinter(const QWebFrame *frame, QPrinter *printer)
+    : d(new QWebPrinterPrivate(frame, printer))
+{}
+
+QWebPrinter::~QWebPrinter() 
+{
+    delete d; 
+}
+
+/*!
+    Print a page of the frame. \a i is  the number of the page to print, 
+    and must be between 1 and \fn QWebPrinter::pageCount() .
+*/
+void QWebPrinter::spoolPage(int i) const
+{
+    if (i < 1 || i > d->printContext.pageCount()) 
+        return;
+    d->printContext.spoolPage(d->graphicsContext, i - 1, d->printWidth);
+}
+
+/*!
+    Returns the number of pages of the frame when printed.
+*/
+int QWebPrinter::pageCount() const
+{
+    return d->printContext.pageCount();
+}
+
+/*!
+    Return the painter used for printing.
+*/
+QPainter * QWebPrinter::painter() {
+    return &d->painter;
+}
+#endif //QT_NO_PRINTER
+
 QWebFrameData::QWebFrameData(WebCore::Page* parentPage, WebCore::Frame* parentFrame,
                              WebCore::HTMLFrameOwnerElement* ownerFrameElement,
                              const WebCore::String& frameName)
@@ -1152,26 +1231,7 @@ bool QWebFrame::event(QEvent *e)
 */
 void QWebFrame::print(QPrinter *printer) const
 {
-    QPainter painter;
-    if (!painter.begin(printer))
-        return;
-
-    const qreal zoomFactorX = printer->logicalDpiX() / qt_defaultDpi();
-    const qreal zoomFactorY = printer->logicalDpiY() / qt_defaultDpi();
-
-    PrintContext printContext(d->frame);
-    float pageHeight = 0;
-
-    QRect qprinterRect = printer->pageRect();
-
-    IntRect pageRect(0, 0,
-                     int(qprinterRect.width() / zoomFactorX),
-                     int(qprinterRect.height() / zoomFactorY));
-
-    printContext.begin(pageRect.width());
-
-    printContext.computePageRects(pageRect, /* headerHeight */ 0, /* footerHeight */ 0, /* userScaleFactor */ 1.0, pageHeight);
-
+    QWebPrinter p(this, printer);
     int docCopies;
     int pageCopies;
     if (printer->collateCopies()) {
@@ -1188,11 +1248,11 @@ void QWebFrame::print(QPrinter *printer) const
 
     if (fromPage == 0 && toPage == 0) {
         fromPage = 1;
-        toPage = printContext.pageCount();
+        toPage = p.pageCount();
     }
     // paranoia check
     fromPage = qMax(1, fromPage);
-    toPage = qMin(printContext.pageCount(), toPage);
+    toPage = qMin(p.pageCount(), toPage);
 
     if (printer->pageOrder() == QPrinter::LastPageFirst) {
         int tmp = fromPage;
@@ -1200,20 +1260,15 @@ void QWebFrame::print(QPrinter *printer) const
         toPage = tmp;
         ascending = false;
     }
-
-    painter.scale(zoomFactorX, zoomFactorY);
-    GraphicsContext ctx(&painter);
-
     for (int i = 0; i < docCopies; ++i) {
         int page = fromPage;
         while (true) {
             for (int j = 0; j < pageCopies; ++j) {
                 if (printer->printerState() == QPrinter::Aborted
                     || printer->printerState() == QPrinter::Error) {
-                    printContext.end();
                     return;
                 }
-                printContext.spoolPage(ctx, page - 1, pageRect.width());
+                p.spoolPage(page);
                 if (j < pageCopies - 1)
                     printer->newPage();
             }
@@ -1232,8 +1287,6 @@ void QWebFrame::print(QPrinter *printer) const
         if ( i < docCopies - 1)
             printer->newPage();
     }
-
-    printContext.end();
 }
 #endif // QT_NO_PRINTER
 

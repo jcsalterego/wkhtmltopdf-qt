@@ -30,6 +30,9 @@
 #include "qwebelement.h"
 #include "wtf/RefPtr.h"
 #include "Frame.h"
+#include <qpainter.h>
+#include "PrintContext.h"
+#include "GraphicsContext.h"
 
 namespace WebCore {
     class FrameLoaderClientQt;
@@ -56,6 +59,22 @@ public:
     bool allowsScrolling;
     int marginWidth;
     int marginHeight;
+};
+
+struct QWebPrinterBeginCaller {
+    QWebPrinterBeginCaller(QPainter & painter, QPrinter * printer); 
+};
+
+class QWebPrinterPrivate {
+public:
+    WebCore::PrintContext printContext;
+    QPainter painter;
+    QWebPrinterBeginCaller beginCaller;
+    WebCore::GraphicsContext graphicsContext;
+    int printWidth;
+    
+    QWebPrinterPrivate(const QWebFrame * frame, QPrinter *printer);
+    ~QWebPrinterPrivate();
 };
 
 class QWebFramePrivate {
