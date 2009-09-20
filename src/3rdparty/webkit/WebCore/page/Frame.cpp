@@ -778,8 +778,14 @@ void Frame::setZoomFactor(float percent, bool isTextOnly)
 
 void Frame::setPrinting(bool printing, float minPageWidth, float maxPageWidth, bool adjustViewSize)
 {
+    String mediaType;
+    if (m_page->settings())
+	mediaType = m_page->settings()->printingMediaType();
+    if (mediaType == "")
+	mediaType = "print";
+    
     m_doc->setPrinting(printing);
-    view()->setMediaType(printing ? "print" : "screen");
+    view()->setMediaType(printing ? mediaType : "screen");
     m_doc->updateStyleSelector();
     view()->forceLayoutWithPageWidthRange(minPageWidth, maxPageWidth, adjustViewSize);
 
