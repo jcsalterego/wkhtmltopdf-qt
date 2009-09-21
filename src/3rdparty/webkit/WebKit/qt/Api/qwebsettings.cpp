@@ -385,8 +385,8 @@ QWebSettings::QWebSettings()
     d->attributes.insert(QWebSettings::LocalContentCanAccessRemoteUrls, false);
     d->attributes.insert(QWebSettings::SessionStorageEnabled, true);
     d->offlineStorageDefaultQuota = 5 * 1024 * 1024;
-    d->printingMinimumShrinkFactor = 0f;
-    d->printingMaximumShrinkFactor = 0f;
+    d->printingMinimumShrinkFactor = 0.0f;
+    d->printingMaximumShrinkFactor = 0.0f;
 }
 
 /*!
