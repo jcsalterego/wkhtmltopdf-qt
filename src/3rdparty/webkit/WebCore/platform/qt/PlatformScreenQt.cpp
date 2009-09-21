@@ -60,7 +60,7 @@ int screenDepth(Widget* w)
 
 int screenDepthPerComponent(Widget* w)
 {
-    if (QApplication::type() ==Q Application::Tty)
+    if (QApplication::type() == QApplication::Tty)
         return 32;
     if (w) {
         QWebPageClient* client = w->root()->hostWindow()->platformPageClient();
