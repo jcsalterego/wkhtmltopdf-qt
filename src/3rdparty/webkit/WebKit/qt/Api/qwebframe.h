@@ -113,6 +113,7 @@ public:
     void spoolPage(int i) const;
     QPainter * painter();
     int pageCount() const;
+    QPair<int, QRectF> elementLocation(const QWebElement & e);
 private:
     QWebPrinterPrivate * d;
 };
@@ -243,6 +244,7 @@ private:
     friend class QWebPagePrivate;
     friend class QWebFramePrivate;
     friend class QWebPrinterPrivate;
+    friend class QWebPrinter;
     friend class WebCore::WidgetPrivate;
     friend class WebCore::FrameLoaderClientQt;
     friend class WebCore::ChromeClientQt;

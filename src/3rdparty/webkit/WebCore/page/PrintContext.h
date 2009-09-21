@@ -47,6 +47,8 @@ public:
 
     void end();
 
+public:
+    const Vector<IntRect> & getPageRects() const {return m_pageRects;}
 protected:
     Frame* m_frame;
     Vector<IntRect> m_pageRects;
