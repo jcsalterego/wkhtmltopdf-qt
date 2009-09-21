@@ -115,17 +115,14 @@ Settings::Settings(Page* page)
     , m_downloadableBinaryFontsEnabled(true)
     , m_xssAuditorEnabled(false)
     , m_acceleratedCompositingEnabled(true)
-<<<<<<< HEAD:src/3rdparty/webkit/WebCore/page/Settings.cpp
     , m_experimentalNotificationsEnabled(false)
     , m_pluginHalterEnabled(false)
     , m_experimentalWebGLEnabled(false)
 #if ENABLE(WEB_SOCKETS)
     , m_experimentalWebSocketsEnabled(false)
 #endif
-=======
-    , m_printingMinimumShrinkFactor(0f)
-    , m_printingMaximumShrinkFactor(0f)
->>>>>>> Add support for custom print shrinking:src/3rdparty/webkit/WebCore/page/Settings.cpp
+    , m_printingMinimumShrinkFactor(0.0f)
+    , m_printingMaximumShrinkFactor(0.0f)
 {
     // A Frame may not have been created yet, so we initialize the AtomicString 
     // hash before trying to use it.
