@@ -382,8 +382,8 @@ QWebSettings::QWebSettings()
     d->attributes.insert(QWebSettings::LocalContentCanAccessRemoteUrls, false);
     d->offlineStorageDefaultQuota = 5 * 1024 * 1024;
     d->defaultTextEncoding = QLatin1String("iso-8859-1");
-    d->printingMinimumShrinkFactor = 0f;
-    d->printingMaximumShrinkFactor = 0f;
+    d->printingMinimumShrinkFactor = 0.0f;
+    d->printingMaximumShrinkFactor = 0.0f;
 }
 
 /*!
