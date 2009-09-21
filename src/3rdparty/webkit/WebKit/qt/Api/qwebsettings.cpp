@@ -176,10 +176,10 @@ void QWebSettingsPrivate::apply()
         QString storagePath = !localStoragePath.isEmpty() ? localStoragePath : global->localStoragePath;
         settings->setLocalStorageDatabasePath(storagePath);
 
-        float minimumShrinkFactor = printingMinimumShrinkFactor > 0f ? printingMinimumShrinkFactor : global->printingMinimumShrinkFactor;
+        float minimumShrinkFactor = printingMinimumShrinkFactor > 0.0f ? printingMinimumShrinkFactor : global->printingMinimumShrinkFactor;
         settings->setPrintingMinimumShrinkFactor(minimumShrinkFactor);
 
-        float maximumShrinkFactor = printingMaximumShrinkFactor > 0f ? printingMaximumShrinkFactor : global->printingMaximumShrinkFactor;
+        float maximumShrinkFactor = printingMaximumShrinkFactor > 0.0f ? printingMaximumShrinkFactor : global->printingMaximumShrinkFactor;
         settings->setPrintingMaximumShrinkFactor(maximumShrinkFactor);
 
         value = attributes.value(QWebSettings::ZoomTextOnly,
