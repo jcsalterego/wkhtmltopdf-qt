@@ -96,10 +96,10 @@ void PrintContext::computePageRects(const FloatRect& printRect, float headerHeig
 
 void PrintContext::begin(float width)
 {
-    const float PrintingMinimumShrinkFactor = m_frame->settings() ? m_frame->settings()->printingMinimumShrinkFactor() : 0f;
-    const float PrintingMaximumShrinkFactor = m_frame->settings() ? m_frame->settings()->printingMaximumShrinkFactor() : 0f;
+    float PrintingMinimumShrinkFactor = m_frame->settings() ? m_frame->settings()->printingMinimumShrinkFactor() : 0.0f;
+    float PrintingMaximumShrinkFactor = m_frame->settings() ? m_frame->settings()->printingMaximumShrinkFactor() : 0.0f;
 
-    if (PrintingMaximumShrinkFactor < PrintingMinimumShrinkFactor || PrintingMinimumShrinkFactor <= 0f) {
+    if (PrintingMaximumShrinkFactor < PrintingMinimumShrinkFactor || PrintingMinimumShrinkFactor <= 0.0f) {
         // By imaging to a width a little wider than the available pixels,
         // thin pages will be scaled down a little, matching the way they
         // print in IE and Camino. This lets them use fewer sheets than they
