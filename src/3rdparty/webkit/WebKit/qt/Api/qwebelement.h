@@ -143,6 +143,7 @@ private:
     friend class QWebHitTestResult;
     friend class QWebHitTestResultPrivate;
     friend class QWebPage;
+    friend class QWebPrinter;
 
     QWebElementPrivate* d;
     WebCore::Element* m_element;

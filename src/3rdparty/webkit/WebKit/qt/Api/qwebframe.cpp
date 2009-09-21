@@ -193,9 +193,10 @@ QWebPrinterBeginCaller::QWebPrinterBeginCaller(QPainter &painter, QPrinter *prin
     painter.begin(printer);
 }
 
-QWebPrinterPrivate::QWebPrinterPrivate(const QWebFrame *frame, QPrinter *printer)
-    : printContext(frame->d->frame)
+QWebPrinterPrivate::QWebPrinterPrivate(const QWebFrame *f, QPrinter *printer)
+    : printContext(f->d->frame)
     , beginCaller(painter, printer)
+    , frame(f)
     , graphicsContext(&painter)
 {
     const qreal zoomFactorX = printer->logicalDpiX() / qt_defaultDpi();
@@ -254,6 +255,35 @@ void QWebPrinter::spoolPage(int i) const
 int QWebPrinter::pageCount() const
 {
     return d->printContext.pageCount();
+}
+
+
+QPair<int, QRectF> QWebPrinter::elementLocation(const QWebElement & e)
+{
+    if (d->elementToRenderObject.empty())
+	for (WebCore::RenderObject * o=d->frame->d->frame->document()->renderer(); o; o=o->nextInPreOrder())
+	    if (o->node())
+		d->elementToRenderObject[o->node()] = o;
+    
+    if (!d->elementToRenderObject.contains(e.m_element))
+	return QPair<int,QRectF>(-1, QRectF());
+    const WebCore::RenderObject * ro = d->elementToRenderObject[e.m_element];
+    const Vector<IntRect> & pageRects = d->printContext.getPageRects();
+    
+    QRectF r(ro->absoluteOutlineBounds());
+    
+    int low=0;
+    int high=pageRects.size();
+    while(low < high) {
+	int m = (low+high)/2;
+	if(r.y() < pageRects[m].y())
+	    high = m-1;
+	else if(r.y() > pageRects[m].bottom())
+	    low = m +1;
+	else 
+	    return QPair<int, QRectF>(m+1, r.translated(0, -pageRects[m].y()));
+    }
+    return QPair<int,QRectF>(-1, QRectF());
 }
 
 /*!

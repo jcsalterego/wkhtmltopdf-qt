@@ -70,8 +70,10 @@ public:
     WebCore::PrintContext printContext;
     QPainter painter;
     QWebPrinterBeginCaller beginCaller;
+    const QWebFrame * frame;
     WebCore::GraphicsContext graphicsContext;
     int printWidth;
+    QHash<const WebCore::Node*, const WebCore::RenderObject *> elementToRenderObject;
     
     QWebPrinterPrivate(const QWebFrame * frame, QPrinter *printer);
     ~QWebPrinterPrivate();
