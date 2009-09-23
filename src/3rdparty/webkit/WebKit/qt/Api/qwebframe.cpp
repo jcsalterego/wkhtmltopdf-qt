@@ -257,19 +257,23 @@ int QWebPrinter::pageCount() const
     return d->printContext.pageCount();
 }
 
-
 QPair<int, QRectF> QWebPrinter::elementLocation(const QWebElement & e)
 {
+    //Compute a mapping from node to render object once and for all
     if (d->elementToRenderObject.empty())
 	for (WebCore::RenderObject * o=d->frame->d->frame->document()->renderer(); o; o=o->nextInPreOrder())
 	    if (o->node())
 		d->elementToRenderObject[o->node()] = o;
-    
+        
     if (!d->elementToRenderObject.contains(e.m_element))
 	return QPair<int,QRectF>(-1, QRectF());
     const WebCore::RenderObject * ro = d->elementToRenderObject[e.m_element];
     const Vector<IntRect> & pageRects = d->printContext.getPageRects();
-    
+
+    WebCore::RenderView *root = toRenderView(d->frame->d->frame->document()->renderer());
+    //We need the scale factor, because pages are shrinked
+    float scale = (float)d->printWidth / (float)root->width();
+
     QRectF r(ro->absoluteOutlineBounds());
     
     int low=0;
@@ -280,8 +284,11 @@ QPair<int, QRectF> QWebPrinter::elementLocation(const QWebElement & e)
 	    high = m-1;
 	else if(r.y() > pageRects[m].bottom())
 	    low = m +1;
-	else 
-	    return QPair<int, QRectF>(m+1, r.translated(0, -pageRects[m].y()));
+	else {
+	  QRectF tr = r.translated(0, -pageRects[m].y());
+	  return QPair<int, QRectF>(m+1, QRect(tr.x() * scale, tr.y()*scale, tr.width()*scale, tr.height()*scale));
+	}
+	 
     }
     return QPair<int,QRectF>(-1, QRectF());
 }
