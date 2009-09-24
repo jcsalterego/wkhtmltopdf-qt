@@ -274,11 +274,11 @@ QPair<int, QRectF> QWebPrinter::elementLocation(const QWebElement & e)
     //We need the scale factor, because pages are shrinked
     float scale = (float)d->printWidth / (float)root->width();
 
-    QRectF r(ro->absoluteOutlineBounds());
+    QRectF r(const_cast<WebCore::RenderObject *>(ro)->absoluteBoundingBoxRect());
     
     int low=0;
     int high=pageRects.size();
-    while(low < high) {
+    while(low <= high) {
 	int m = (low+high)/2;
 	if(r.y() < pageRects[m].y())
 	    high = m-1;
