@@ -187,17 +187,11 @@ void QWEBKIT_EXPORT qt_drt_garbageCollector_collectOnAlternateThread(bool waitUn
 
 
 #ifndef QT_NO_PRINTER
-
-QWebPrinterBeginCaller::QWebPrinterBeginCaller(QPainter &painter, QPrinter *printer)
-{
-    painter.begin(printer);
-}
-
-QWebPrinterPrivate::QWebPrinterPrivate(const QWebFrame *f, QPrinter *printer)
+QWebPrinterPrivate::QWebPrinterPrivate(const QWebFrame *f, QPrinter *printer, QPainter &p)
     : printContext(f->d->frame)
-    , beginCaller(painter, printer)
+    , painter(p)
     , frame(f)
-    , graphicsContext(&painter)
+    , graphicsContext(&p)
 {
     const qreal zoomFactorX = printer->logicalDpiX() / qt_defaultDpi();
     const qreal zoomFactorY = printer->logicalDpiY() / qt_defaultDpi();
@@ -217,7 +211,6 @@ QWebPrinterPrivate::QWebPrinterPrivate(const QWebFrame *f, QPrinter *printer)
 QWebPrinterPrivate::~QWebPrinterPrivate() 
 {
     printContext.end();
-    painter.end();
 }
 
 /*!
@@ -229,8 +222,8 @@ QWebPrinterPrivate::~QWebPrinterPrivate()
 
     \sa QWebFrame
 */
-QWebPrinter::QWebPrinter(const QWebFrame *frame, QPrinter *printer)
-    : d(new QWebPrinterPrivate(frame, printer))
+QWebPrinter::QWebPrinter(const QWebFrame *frame, QPrinter *printer, QPainter &painter)
+    : d(new QWebPrinterPrivate(frame, printer, painter))
 {}
 
 QWebPrinter::~QWebPrinter() 
@@ -1268,7 +1261,9 @@ bool QWebFrame::event(QEvent *e)
 */
 void QWebFrame::print(QPrinter *printer) const
 {
-    QWebPrinter p(this, printer);
+    QPainter painter;
+    painter.begin(printer);
+    QWebPrinter p(this, printer, painter);
     int docCopies;
     int pageCopies;
     if (printer->collateCopies()) {
@@ -1324,6 +1319,7 @@ void QWebFrame::print(QPrinter *printer) const
         if ( i < docCopies - 1)
             printer->newPage();
     }
+    painter.end();
 }
 #endif // QT_NO_PRINTER
 

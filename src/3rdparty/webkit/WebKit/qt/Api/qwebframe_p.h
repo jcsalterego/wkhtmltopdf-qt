@@ -61,21 +61,16 @@ public:
     int marginHeight;
 };
 
-struct QWebPrinterBeginCaller {
-    QWebPrinterBeginCaller(QPainter & painter, QPrinter * printer); 
-};
-
 class QWebPrinterPrivate {
 public:
     WebCore::PrintContext printContext;
-    QPainter painter;
-    QWebPrinterBeginCaller beginCaller;
+    QPainter & painter;
     const QWebFrame * frame;
     WebCore::GraphicsContext graphicsContext;
     int printWidth;
     QHash<const WebCore::Node*, const WebCore::RenderObject *> elementToRenderObject;
     
-    QWebPrinterPrivate(const QWebFrame * frame, QPrinter *printer);
+    QWebPrinterPrivate(const QWebFrame * frame, QPrinter *printer, QPainter &p);
     ~QWebPrinterPrivate();
 };
 
