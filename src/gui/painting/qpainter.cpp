@@ -6748,7 +6748,7 @@ void QPainter::addAnchor(const QRectF &r, const QString &name)
         qWarning("QPainter::addAnchor: Painter not active");
         return;
     }
-    d->engine->addAnchor(r, name);
+    d->engine->addAnchor(worldTransform().mapRect(r), name);
 }
 
 /*!
@@ -6805,7 +6805,8 @@ void QPainter::addLink(const QRectF &r, const QString &anchor)
         qWarning("QPainter::addLink: Painter not active");
         return;
     }
-    d->engine->addLink(r, anchor);
+    
+    d->engine->addLink(worldTransform().mapRect(r), anchor);
 }
 
 
@@ -6857,7 +6858,7 @@ void QPainter::addHyperlink(const QRectF &r, const QUrl &url)
         qWarning("QPainter::addHyperlink: Painter not active");
         return;
     }
-    d->engine->addHyperlink(r, url);
+    d->engine->addHyperlink(worldTransform().mapRect(r), url);
 }
 
 /*!
