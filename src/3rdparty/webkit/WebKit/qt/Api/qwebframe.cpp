@@ -197,7 +197,7 @@ QString QWEBKIT_EXPORT qt_drt_counterValueForElementById(QWebFrame* qFrame, cons
 }
 
 #ifndef QT_NO_PRINTER
-QWebPrinterPrivate::QWebPrinterPrivate(const QWebFrame *f, QPrinter *printer, QPainter &p)
+QWebPrinterPrivate::QWebPrinterPrivate(const QWebFrame *f, QPaintDevice *printer, QPainter &p)
     : printContext(f->d->frame)
     , painter(p)
     , frame(f)
@@ -205,10 +205,9 @@ QWebPrinterPrivate::QWebPrinterPrivate(const QWebFrame *f, QPrinter *printer, QP
 {
     const qreal zoomFactorX = printer->logicalDpiX() / qt_defaultDpi();
     const qreal zoomFactorY = printer->logicalDpiY() / qt_defaultDpi();
-    QRect qprinterRect = printer->pageRect();
     IntRect pageRect(0, 0,
-                     int(qprinterRect.width() / zoomFactorX),
-                     int(qprinterRect.height() / zoomFactorY));
+                     int(printer->width() / zoomFactorX),
+                     int(printer->height() / zoomFactorY));
     
     printContext.begin(pageRect.width());
     float pageHeight = 0;
@@ -232,7 +231,7 @@ QWebPrinterPrivate::~QWebPrinterPrivate()
 
     \sa QWebFrame
 */
-QWebPrinter::QWebPrinter(const QWebFrame *frame, QPrinter *printer, QPainter &painter)
+QWebPrinter::QWebPrinter(const QWebFrame *frame, QPaintDevice *printer, QPainter &painter)
     : d(new QWebPrinterPrivate(frame, printer, painter))
 {}
 

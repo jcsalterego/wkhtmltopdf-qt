@@ -70,7 +70,7 @@ public:
     int printWidth;
     QHash<const WebCore::Node*, const WebCore::RenderObject *> elementToRenderObject;
     
-    QWebPrinterPrivate(const QWebFrame * frame, QPrinter *printer, QPainter &p);
+    QWebPrinterPrivate(const QWebFrame * frame, QPaintDevice *printer, QPainter &p);
     ~QWebPrinterPrivate();
 };
 
