@@ -1232,7 +1232,7 @@ void QPdfEngine::addAnchor(const QRectF &r, const QString &name)
                d->pages.size() - 1,
                qt_real_to_string(rr.left(), buf));
     d->xprintf("%s 0]\n",
-               qt_real_to_string(rr.top(), buf));
+               qt_real_to_string(rr.bottom(), buf));
     d->xprintf("endobj\n");
     d->anchors[name] = anchor;
 }
