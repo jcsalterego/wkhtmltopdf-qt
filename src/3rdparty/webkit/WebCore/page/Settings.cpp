@@ -439,6 +439,11 @@ void Settings::setApplicationChromeMode(bool mode)
     m_inApplicationChromeMode = mode;
 }
 
+void Settings::setPrintingMediaType(const String& type)
+{
+    m_printingMediaType = type;
+}
+
 void Settings::setOfflineWebApplicationCacheEnabled(bool enabled)
 {
     m_offlineWebApplicationCacheEnabled = enabled;
