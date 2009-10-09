@@ -125,14 +125,18 @@ RenderThemeQt::RenderThemeQt(Page* page)
     , m_page(page)
     , m_fallbackStyle(0)
 {
-    QPushButton button;
-    button.setAttribute(Qt::WA_MacSmallSize);
-    QFont defaultButtonFont = QApplication::font(&button);
-    QFontInfo fontInfo(defaultButtonFont);
-    m_buttonFontFamily = defaultButtonFont.family();
+    if (QApplication::type() != QApplication::Tty) {
+        QPushButton button;
+        button.setAttribute(Qt::WA_MacSmallSize);
+        QFont defaultButtonFont = QApplication::font(&button);
+        QFontInfo fontInfo(defaultButtonFont);
+        m_buttonFontFamily = defaultButtonFont.family();
 #ifdef Q_WS_MAC
-    m_buttonFontPixelSize = fontInfo.pixelSize();
+        m_buttonFontPixelSize = fontInfo.pixelSize();
 #endif
+    } else  {
+        m_buttonFontFamily = "sans-serif";
+    }
 }
 
 RenderThemeQt::~RenderThemeQt()
@@ -281,8 +285,12 @@ void RenderThemeQt::systemFont(int, FontDescription&) const
 
 int RenderThemeQt::minimumMenuListSize(RenderStyle*) const
 {
-    const QFontMetrics &fm = QApplication::fontMetrics();
-    return 7 * fm.width(QLatin1Char('x'));
+    if (QApplication::type()!=QApplication::Tty) {
+        const QFontMetrics &fm = QApplication::fontMetrics();
+        return 7 * fm.width(QLatin1Char('x'));
+    } else {
+         return 1;
+    }
 }
 
 void RenderThemeQt::computeSizeBasedOnStyle(RenderStyle* renderStyle) const
