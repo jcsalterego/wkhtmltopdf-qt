@@ -121,6 +121,8 @@ Settings::Settings(Page* page)
 #if ENABLE(WEB_SOCKETS)
     , m_experimentalWebSocketsEnabled(false)
 #endif
+    , m_printingMinimumShrinkFactor(0.0f)
+    , m_printingMaximumShrinkFactor(0.0f)
 {
     // A Frame may not have been created yet, so we initialize the AtomicString 
     // hash before trying to use it.
@@ -537,6 +539,7 @@ void Settings::setShouldUseHighResolutionTimers(bool shouldUseHighResolutionTime
 }
 #endif
 
+
 void Settings::setExperimentalWebGLEnabled(bool enabled)
 {
     m_experimentalWebGLEnabled = enabled;
@@ -548,5 +551,16 @@ void Settings::setExperimentalWebSocketsEnabled(bool enabled)
     m_experimentalWebSocketsEnabled = enabled;
 }
 #endif
+
+void Settings::setPrintingMinimumShrinkFactor(float printingMinimumShrinkFactor)
+{
+    m_printingMinimumShrinkFactor = printingMinimumShrinkFactor;
+}    
+
+void Settings::setPrintingMaximumShrinkFactor(float printingMaximumShrinkFactor)
+{
+    m_printingMaximumShrinkFactor = printingMaximumShrinkFactor;
+}    
+
 
 } // namespace WebCore
