@@ -515,7 +515,7 @@ QString QWebSettings::defaultTextEncoding() const
 void QWebSettings::setPrintingMediaType(const QString& type)
 {
     d->printingMediaType = type;
-    d->apply()
+    d->apply();
 }
 
 
