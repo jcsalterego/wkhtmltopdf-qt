@@ -115,6 +115,7 @@
 #include "private/qevent_p.h"
 
 #include "private/qgraphicssystem_p.h"
+#include "private/qgesturemanager_p.h"
 
 // widget/widget data creation count
 //#define QWIDGET_EXTRA_DEBUG
@@ -901,9 +902,8 @@ void QWidget::setAutoFillBackground(bool enabled)
     \sa QEvent, QPainter, QGridLayout, QBoxLayout
 
     \section1 Softkeys
-    \since 4.6
 
-    Softkeys are usually physical keys on a device that have a corresponding label or
+    Since Qt 4.6, Softkeys are usually physical keys on a device that have a corresponding label or
     other visual representation on the screen that is generally located next to its
     physical counterpart. They are most often found on mobile phone platforms. In
     modern touch based user interfaces it is also possible to have softkeys that do
@@ -8333,6 +8333,9 @@ bool QWidget::event(QEvent *event)
         (void) QApplication::sendEvent(this, &mouseEvent);
         break;
     }
+    case QEvent::Gesture:
+        event->ignore();
+        break;
 #ifndef QT_NO_PROPERTIES
     case QEvent::DynamicPropertyChange: {
         const QByteArray &propName = static_cast<QDynamicPropertyChangeEvent *>(event)->propertyName();
@@ -11668,6 +11671,13 @@ QGraphicsProxyWidget *QWidget::graphicsProxyWidget() const
 
     Synonym for QList<QWidget *>.
 */
+
+void QWidget::grabGesture(Qt::GestureType type, Qt::GestureContext context)
+{
+    Q_D(QWidget);
+    d->gestureContext.insert(type, context);
+    (void)QGestureManager::instance(); // create a gesture manager
+}
 
 QT_END_NAMESPACE
 
