@@ -211,6 +211,8 @@ bool RenderThemeQt::supportsControlTints() const
 
 static int findFrameLineWidth(QStyle* style)
 {
+    if (QApplication::type()==QApplication::Tty)
+        return 1;
     QLineEdit lineEdit;
     QStyleOptionFrameV2 opt;
     return style->pixelMetric(QStyle::PM_DefaultFrameWidth, &opt, &lineEdit);
