@@ -788,7 +788,7 @@ void Frame::setPrinting(bool printing, float minPageWidth, float maxPageWidth, b
     String mediaType;
     if (m_page->settings())
 	mediaType = m_page->settings()->printingMediaType();
-    if (mediaType == "")
+    if (mediaType.isEmpty())
 	mediaType = "print";
     
     m_doc->setPrinting(printing);
