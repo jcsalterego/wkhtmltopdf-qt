@@ -172,8 +172,8 @@ void QWebSettingsPrivate::apply()
         QString encoding = !defaultTextEncoding.isEmpty() ? defaultTextEncoding: global->defaultTextEncoding;
         settings->setDefaultTextEncodingName(encoding);
 
-        QString type = !printingMediaType.isEmpty() ? printingMediaType: global->printingMediaType;
-        settings->setPrintingMediaType(type);
+        QString type = !printingMediaType.isEmpty() ? printingMediaType : global->printingMediaType;
+        settings->setPrintingMediaType(type.isEmpty() ? "print" : type);
 
         QString storagePath = !localStoragePath.isEmpty() ? localStoragePath : global->localStoragePath;
         settings->setLocalStorageDatabasePath(storagePath);
@@ -507,7 +507,8 @@ void QWebSettings::setPrintingMediaType(const QString& type)
 
 /*!
     \since 4.7
-    Returns the media type used when printing.
+    Returns the media type used when printing or QString() if the
+    default value is used.
 
     \sa setPrintingMediaType()
 */

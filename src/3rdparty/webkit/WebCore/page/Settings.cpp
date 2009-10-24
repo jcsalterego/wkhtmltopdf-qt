@@ -54,6 +54,7 @@ bool Settings::gShouldUseHighResolutionTimers = true;
 
 Settings::Settings(Page* page)
     : m_page(page)
+    , m_printingMediaType("print")
     , m_editableLinkBehavior(EditableLinkDefaultBehavior)
     , m_textDirectionSubmenuInclusionBehavior(TextDirectionSubmenuAutomaticallyIncluded)
     , m_minimumFontSize(0)
