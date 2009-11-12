@@ -62,8 +62,8 @@ public:
     QString localStoragePath;
     QString offlineWebApplicationCachePath;
     qint64 offlineStorageDefaultQuota;
-    float printingMinimumShrinkFactor;
-    float printingMaximumShrinkFactor;
+    qreal printingMinimumShrinkFactor;
+    qreal printingMaximumShrinkFactor;
 
     void apply();
     WebCore::Settings* settings;
@@ -500,7 +500,7 @@ QString QWebSettings::defaultTextEncoding() const
 }
 
 /*!
-    \since 4.7 
+    \since 4.6
     Specifies minimum shrink fator allowed for printing. If set to 0 a
     default value is used.
 
@@ -512,43 +512,43 @@ QString QWebSettings::defaultTextEncoding() const
     \sa setPrintingMaximumShrinkFactor()
     \sa printingMaximumShrinkFactor()
 */
-void QWebSettings::setPrintingMinimumShrinkFactor(float printingMinimumShrinkFactor)
+void QWebSettings::setPrintingMinimumShrinkFactor(qreal printingMinimumShrinkFactor)
 {
     d->printingMinimumShrinkFactor = printingMinimumShrinkFactor;
     d->apply();
 }
 
 /*!
-    \since 4.7 
+    \since 4.6
     returns the minimum shrink factor used for printing.
 
     \sa setPrintingMinimumShrinkFactor()
 */
-float QWebSettings::printingMinimumShrinkFactor() const
+qreal QWebSettings::printingMinimumShrinkFactor() const
 {
     return d->printingMinimumShrinkFactor;
 }
 
 /*!
-    \since 4.7 
+    \since 4.6 
     Specifies maximum shrink fator allowed for printing. If set to 0 a
     default value is used.
 
     \sa setPrintingMinimumShrinkFactor()
 */
-void QWebSettings::setPrintingMaximumShrinkFactor(float printingMaximumShrinkFactor)
+void QWebSettings::setPrintingMaximumShrinkFactor(qreal printingMaximumShrinkFactor)
 {
     d->printingMaximumShrinkFactor = printingMaximumShrinkFactor;
     d->apply();
 }
 
 /*!
-    \since 4.7 
+    \since 4.6 
     returns the maximum shrink factor used for printing.
 
     \sa setPrintingMinimumShrinkFactor()
 */
-float QWebSettings::printingMaximumShrinkFactor() const
+qreal QWebSettings::printingMaximumShrinkFactor() const
 {
     return d->printingMaximumShrinkFactor;
 }
