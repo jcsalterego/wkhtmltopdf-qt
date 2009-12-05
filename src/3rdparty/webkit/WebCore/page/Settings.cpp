@@ -119,8 +119,8 @@ Settings::Settings(Page* page)
     , m_acceleratedCompositingEnabled(true)
     , m_experimentalNotificationsEnabled(false)
     , m_webGLEnabled(false)
-    , m_printingMinimumShrinkFactor(0f)
-    , m_printingMaximumShrinkFactor(0f)
+    , m_printingMinimumShrinkFactor(0.0f)
+    , m_printingMaximumShrinkFactor(0.0f)
 {
     // A Frame may not have been created yet, so we initialize the AtomicString 
     // hash before trying to use it.
