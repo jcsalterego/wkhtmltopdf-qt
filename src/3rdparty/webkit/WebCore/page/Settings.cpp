@@ -119,6 +119,8 @@ Settings::Settings(Page* page)
     , m_acceleratedCompositingEnabled(true)
     , m_experimentalNotificationsEnabled(false)
     , m_webGLEnabled(false)
+    , m_printingMinimumShrinkFactor(0f)
+    , m_printingMaximumShrinkFactor(0f)
 {
     // A Frame may not have been created yet, so we initialize the AtomicString 
     // hash before trying to use it.
@@ -534,5 +536,15 @@ void Settings::setWebGLEnabled(bool enabled)
 {
     m_webGLEnabled = enabled;
 }
+
+void Settings::setPrintingMinimumShrinkFactor(float printingMinimumShrinkFactor)
+{
+    m_printingMinimumShrinkFactor = printingMinimumShrinkFactor;
+}    
+
+void Settings::setPrintingMaximumShrinkFactor(float printingMaximumShrinkFactor)
+{
+    m_printingMaximumShrinkFactor = printingMaximumShrinkFactor;
+}    
 
 } // namespace WebCore

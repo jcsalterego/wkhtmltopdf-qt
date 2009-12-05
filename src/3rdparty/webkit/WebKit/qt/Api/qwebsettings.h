@@ -102,8 +102,16 @@ public:
     void setDefaultTextEncoding(const QString &encoding);
     QString defaultTextEncoding() const;
 
+<<<<<<< HEAD:src/3rdparty/webkit/WebKit/qt/Api/qwebsettings.h
     void setPrintingMediaType(const QString &type);
     QString printingMediaType() const;
+=======
+    void setPrintingMinimumShrinkFactor(qreal printingMinimumShrinkFactor);
+    qreal printingMinimumShrinkFactor() const;
+
+    void setPrintingMaximumShrinkFactor(qreal printingMaximimShrinkFactor);
+    qreal printingMaximumShrinkFactor() const;
+>>>>>>> wk-shrink:src/3rdparty/webkit/WebKit/qt/Api/qwebsettings.h
 
     static void setIconDatabasePath(const QString &location);
     static QString iconDatabasePath();

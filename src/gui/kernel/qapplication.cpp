@@ -97,6 +97,7 @@
 #include "qapplication.h"
 
 #include "qgesture.h"
+
 #include "private/qgesturemanager_p.h"
 
 #ifndef QT_NO_LIBRARY

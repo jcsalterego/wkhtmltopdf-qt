@@ -63,6 +63,8 @@ public:
     QString printingMediaType;
     QString offlineWebApplicationCachePath;
     qint64 offlineStorageDefaultQuota;
+    qreal printingMinimumShrinkFactor;
+    qreal printingMaximumShrinkFactor;
 
     void apply();
     WebCore::Settings* settings;
@@ -177,6 +179,12 @@ void QWebSettingsPrivate::apply()
 
         QString storagePath = !localStoragePath.isEmpty() ? localStoragePath : global->localStoragePath;
         settings->setLocalStorageDatabasePath(storagePath);
+
+        float minimumShrinkFactor = printingMinimumShrinkFactor > 0.0f ? printingMinimumShrinkFactor : global->printingMinimumShrinkFactor;
+        settings->setPrintingMinimumShrinkFactor(minimumShrinkFactor);
+
+        float maximumShrinkFactor = printingMaximumShrinkFactor > 0.0f ? printingMaximumShrinkFactor : global->printingMaximumShrinkFactor;
+        settings->setPrintingMaximumShrinkFactor(maximumShrinkFactor);
 
         value = attributes.value(QWebSettings::ZoomTextOnly,
                                  global->attributes.value(QWebSettings::ZoomTextOnly));
@@ -378,6 +386,8 @@ QWebSettings::QWebSettings()
     d->attributes.insert(QWebSettings::LocalContentCanAccessRemoteUrls, false);
     d->offlineStorageDefaultQuota = 5 * 1024 * 1024;
     d->defaultTextEncoding = QLatin1String("iso-8859-1");
+    d->printingMinimumShrinkFactor = 1.25f;
+    d->printingMaximumShrinkFactor = 2.0f;
 }
 
 /*!
@@ -386,6 +396,8 @@ QWebSettings::QWebSettings()
 QWebSettings::QWebSettings(WebCore::Settings* settings)
     : d(new QWebSettingsPrivate(settings))
 {
+    d->printingMinimumShrinkFactor = 0.0f;
+    d->printingMaximumShrinkFactor = 0.0f;
     d->settings = settings;
     d->apply();
     allSettings()->append(d);
@@ -492,6 +504,7 @@ QString QWebSettings::defaultTextEncoding() const
 }
 
 /*!
+
     \since 4.7
     Specifies which media type to use when printing. If
     left empty the default "print" will be used, other choices include "screen". 
@@ -515,6 +528,60 @@ void QWebSettings::setPrintingMediaType(const QString& type)
 QString QWebSettings::printingMediaType() const
 {
     return d->printingMediaType;
+}
+
+/*!
+    \since 4.6
+    Specifies minimum shrink fator allowed for printing. If set to 0 a
+    default value is used.
+
+    When printing, content will be shrunk to reduce page usage, it
+    will reduced by a factor between printingMinimumShrinkFactor and
+    printingMaximumShrinkFactor. 
+
+    \sa printingMinimumShrinkFactor()
+    \sa setPrintingMaximumShrinkFactor()
+    \sa printingMaximumShrinkFactor()
+*/
+void QWebSettings::setPrintingMinimumShrinkFactor(qreal printingMinimumShrinkFactor)
+{
+    d->printingMinimumShrinkFactor = printingMinimumShrinkFactor;
+    d->apply();
+}
+
+/*!
+    \since 4.6
+    returns the minimum shrink factor used for printing.
+
+    \sa setPrintingMinimumShrinkFactor()
+*/
+qreal QWebSettings::printingMinimumShrinkFactor() const
+{
+    return d->printingMinimumShrinkFactor;
+}
+
+/*!
+    \since 4.6 
+    Specifies maximum shrink fator allowed for printing. If set to 0 a
+    default value is used.
+
+    \sa setPrintingMinimumShrinkFactor()
+*/
+void QWebSettings::setPrintingMaximumShrinkFactor(qreal printingMaximumShrinkFactor)
+{
+    d->printingMaximumShrinkFactor = printingMaximumShrinkFactor;
+    d->apply();
+}
+
+/*!
+    \since 4.6 
+    returns the maximum shrink factor used for printing.
+
+    \sa setPrintingMinimumShrinkFactor()
+*/
+qreal QWebSettings::printingMaximumShrinkFactor() const
+{
+    return d->printingMaximumShrinkFactor;
 }
 
 /*!
