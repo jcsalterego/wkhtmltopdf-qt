@@ -364,19 +364,34 @@ void QPdfEnginePrivate::printString(const QString &string) {
     xprintf("(");
     int l = string.size();
     const ushort * tit = string.utf16();
-    ushort * buff = new ushort[l+1];
+    /* In a pathological case, the PDF string can be twice as big as
+       the original, if every byte needs escaping.  */
+    ushort * buff = new ushort[l * 2 + 1];
+    char * cbuff = reinterpret_cast<char*>(buff);
+    const char * ctitle = reinterpret_cast<const char*>(tit);
     buff[0] = 0xFEFF;
-    for(int j=0; j<l;++j) buff[j+1] = tit[j];
-    ++l;
-    char * buff_ = reinterpret_cast<char*>(buff);
-    if ((unsigned char)buff_[0] == 0xFF)
-        for (int j=0; j < l;++j) {
-            char t = buff_[j*2];
-            buff_[j*2] = buff_[j*2+1];
-            buff_[j*2+1] = t;
+    int little_endian = (cbuff[0] == (char)0xFF) ? 1 : 0;
+    if (little_endian){
+        cbuff[0] = (char)0xFE;
+        cbuff[1] = (char)0xFF;
+    }
+    int k = 2;
+    for(int j=0; j < l * 2; j++, k++){
+        /* if endian-ness was known at compile time (which it *is*,
+           except we're not using a compile time test) then the
+           next line would be optimised out on big-endian machines.
+         */
+        int jj = j ^ little_endian;
+        if (ctitle[jj] == '(' ||
+            ctitle[jj] == ')' ||
+            ctitle[jj] == '\\'){
+            cbuff[k] = '\\';
+            k++;
         }
-    stream->writeRawData(buff_, l*2);
-    streampos += l*2;
+        cbuff[k] = ctitle[jj];
+    }
+    stream->writeRawData(cbuff, k);
+    streampos += k;
     xprintf(")");
     delete[] buff;
 }
