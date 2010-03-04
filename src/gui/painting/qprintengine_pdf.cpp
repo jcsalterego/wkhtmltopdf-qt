@@ -406,7 +406,7 @@ void QPdfEnginePrivate::writeOutlineChildren(OutlineItem * node) {
        printString(i->text);
        xprintf("\n"
                "  /Parent %d 0 R\n"
-               "  /Dest ");
+               "  /Dest ", i->parent->obj);
        printName(i->anchor);
        xprintf("\n  /Count 0\n");
        if (i->next)
