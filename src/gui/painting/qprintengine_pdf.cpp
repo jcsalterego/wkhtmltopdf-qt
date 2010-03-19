@@ -1246,7 +1246,7 @@ void QPdfEngine::addLink(const QRectF &r, const QString &anchor)
     d->xprintf("%s", qt_real_to_string(rr.bottom(),buf));
     d->xprintf("]\n/Border [0 0 0]\n/Dest ");
     d->printName(anchor);
-    d->xprintf("\n>>\n>>\n");
+    d->xprintf("\n>>\n");
     d->xprintf("endobj\n");
     d->currentPage->annotations.append(annot);
 }
