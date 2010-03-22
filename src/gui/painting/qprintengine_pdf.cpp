@@ -1220,6 +1220,7 @@ void QPdfEngine::addHyperlink(const QRectF &r, const QUrl &url)
         }
         url_esc[k] = urldata[j];
     }
+    url_esc[k] = 0;
     d->xprintf("<<\n/Type /Annot\n/Subtype /Link\n/Rect [");
     d->xprintf("%s ", qt_real_to_string(rr.left(),buf));
     d->xprintf("%s ", qt_real_to_string(rr.top(),buf));
