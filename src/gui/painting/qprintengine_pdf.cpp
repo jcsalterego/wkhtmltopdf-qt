@@ -51,6 +51,7 @@
 #include <qimagewriter.h>
 #include <qbuffer.h>
 #include <qdatetime.h>
+#include <QCryptographicHash>
 
 #ifndef QT_NO_PRINTER
 #include <limits.h>
@@ -176,7 +177,7 @@ bool QPdfEngine::end()
         d->xprintf("/Dests <<\n");
         for (QHash<QString, uint>::iterator i=d->anchors.begin();
 	    i != d->anchors.end(); ++i) {
-            d->printName(i.key());
+            d->printAnchor(i.key());
             d->xprintf(" %d 0 R\n", i.value());
         }
         d->xprintf(">>\n");
@@ -345,8 +346,10 @@ QPdfEnginePrivate::~QPdfEnginePrivate()
     delete stream;
 }
 
-void QPdfEnginePrivate::printName(const QString &name) {
+void QPdfEnginePrivate::printAnchor(const QString &name) {
     QByteArray a = name.toUtf8();
+    if (a.size() >= 127) 
+        a = QCryptographicHash::hash(a,QCryptographicHash::Sha1);
     xprintf("/");
     for (int i=0; i < a.size(); ++i) {
         unsigned char c = a[i];
@@ -407,7 +410,7 @@ void QPdfEnginePrivate::writeOutlineChildren(OutlineItem * node) {
        xprintf("\n"
                "  /Parent %d 0 R\n"
                "  /Dest ", i->parent->obj);
-       printName(i->anchor);
+       printAnchor(i->anchor);
        xprintf("\n  /Count 0\n");
        if (i->next)
            xprintf("  /Next %d 0 R\n", i->next->obj);
@@ -1246,7 +1249,7 @@ void QPdfEngine::addLink(const QRectF &r, const QString &anchor)
     d->xprintf("%s ", qt_real_to_string(rr.right(),buf));
     d->xprintf("%s", qt_real_to_string(rr.bottom(),buf));
     d->xprintf("]\n/Border [0 0 0]\n/Dest ");
-    d->printName(anchor);
+    d->printAnchor(anchor);
     d->xprintf("\n>>\n");
     d->xprintf("endobj\n");
     d->currentPage->annotations.append(annot);

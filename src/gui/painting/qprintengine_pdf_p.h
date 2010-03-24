@@ -207,7 +207,7 @@ private:
     int addXrefEntry(int object, bool printostr = true);
 
     void printString(const QString &string);
-    void printName(const QString &name);
+    void printAnchor(const QString &name);
     
     void xprintf(const char* fmt, ...);
     inline void write(const QByteArray &data) {
