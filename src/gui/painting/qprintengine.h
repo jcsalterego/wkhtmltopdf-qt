@@ -88,6 +88,8 @@ public:
         PPK_PageMargins,
         PPK_PaperSize = PPK_PageSize,
 
+        PKK_UseCompression,
+
         PPK_CustomBase = 0xff00
     };
 
