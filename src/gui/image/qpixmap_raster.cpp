@@ -44,6 +44,7 @@
 #include "qpixmap_raster_p.h"
 #include "qnativeimage_p.h"
 #include "qimage_p.h"
+#include "kernel/qapplication_p.h"
 
 #include "qbitmap.h"
 #include "qimage.h"
@@ -111,8 +112,10 @@ void QRasterPixmapData::resize(int width, int height)
 #else
     if (pixelType() == BitmapType)
         format = QImage::Format_MonoLSB;
-    else
+    else if (qt_is_gui_used)
         format = QNativeImage::systemFormat();
+    else
+        format = QImage::Format_RGB32;
 #endif
 
     image = QImage(width, height, format);
@@ -159,6 +162,84 @@ void QRasterPixmapData::fromImageReader(QImageReader *imageReader,
     QImage image = imageReader->read();
     if (image.isNull())
         return;
+#ifdef Q_WS_QWS
+    QImage::Format format;
+    if (pixelType() == BitmapType) {
+        format = QImage::Format_Mono;
+    } else {
+        format = QScreen::instance()->pixelFormat();
+        if (format == QImage::Format_Invalid)
+            format = QImage::Format_ARGB32_Premultiplied;
+        else if (format == QImage::Format_Indexed8) // currently not supported
+            format = QImage::Format_RGB444;
+    }
+
+    if (sourceImage.hasAlphaChannel()
+        && ((flags & Qt::NoOpaqueDetection)
+            || const_cast<QImage &>(sourceImage).data_ptr()->checkForAlphaPixels())) {
+        switch (format) {
+            case QImage::Format_RGB16:
+                format = QImage::Format_ARGB8565_Premultiplied;
+                break;
+            case QImage::Format_RGB666:
+                format = QImage::Format_ARGB6666_Premultiplied;
+                break;
+            case QImage::Format_RGB555:
+                format = QImage::Format_ARGB8555_Premultiplied;
+                break;
+            case QImage::Format_RGB444:
+                format = QImage::Format_ARGB4444_Premultiplied;
+                break;
+            default:
+                format = QImage::Format_ARGB32_Premultiplied;
+                break;
+        }
+    } else if (format == QImage::Format_Invalid) {
+        format = QImage::Format_ARGB32_Premultiplied;
+    }
+
+    image = sourceImage.convertToFormat(format);
+#else
+    if (pixelType() == BitmapType) {
+        image = sourceImage.convertToFormat(QImage::Format_MonoLSB);
+    } else {
+        if (sourceImage.depth() == 1) {
+            image = sourceImage.hasAlphaChannel()
+                    ? sourceImage.convertToFormat(QImage::Format_ARGB32_Premultiplied)
+                    : sourceImage.convertToFormat(QImage::Format_RGB32);
+        } else {
+
+            QImage::Format opaqueFormat = qt_is_gui_used ? QNativeImage::systemFormat() : QImage::Format_RGB32;
+            QImage::Format alphaFormat = QImage::Format_ARGB32_Premultiplied;
+
+#ifndef QT_HAVE_NEON
+            switch (opaqueFormat) {
+            case QImage::Format_RGB16:
+                alphaFormat = QImage::Format_ARGB8565_Premultiplied;
+                break;
+            default: // We don't care about the others...
+                break;
+            }
+#endif
+
+            if (!sourceImage.hasAlphaChannel()
+                || ((flags & Qt::NoOpaqueDetection) == 0
+                    && !const_cast<QImage &>(sourceImage).data_ptr()->checkForAlphaPixels())) {
+                image = sourceImage.convertToFormat(opaqueFormat);
+            } else {
+                image = sourceImage.convertToFormat(alphaFormat);
+            }
+        }
+    }
+#endif
+    if (image.d) {
+        w = image.d->width;
+        h = image.d->height;
+        d = image.d->depth;
+    } else {
+        w = h = d = 0;
+    }
+    is_null = (w <= 0 || h <= 0);
 
     createPixmapForImage(image, flags, /* inplace = */true);
 }
